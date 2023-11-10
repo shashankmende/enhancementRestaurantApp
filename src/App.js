@@ -5,7 +5,7 @@ import CategoryItems from './components/CategoryItems'
 import './App.css'
 
 class App extends Component {
-  state = {restrauntData: '', categoryList: [], activeTabId: '11', cartSize: 0}
+  state = {restrauntData: '', activeTabId: '11', cartSize: 0}
 
   componentDidMount() {
     this.getData()
@@ -20,14 +20,6 @@ class App extends Component {
     console.log('response =', data)
     const tableMenuList = data[0].table_menu_list
 
-    const tableMenuListFunction = each => ({
-      categoryDishes: each.category_dishes,
-      menuCategory: each.menu_category,
-      menuCategoryId: each.menu_category_id,
-      menuCategoryImage: each.menu_category_image,
-      nextUrl: each.nextUrl,
-    })
-
     const categoryDishesFunction = each => ({
       dishAvailability: each.dish_Availability,
       dishType: each.dish_type,
@@ -39,8 +31,18 @@ class App extends Component {
       dishPrice: each.dish_price,
       nextUrl: each.nextUrl,
       dishImage: each.dish_image,
-      addonCategory: each.addon_category,
+      addonCat: each.addonCat,
       dishQuantity: 0,
+    })
+
+    const tableMenuListFunction = each => ({
+      categoryDishes: each.category_dishes.map(eachCategory =>
+        categoryDishesFunction(eachCategory),
+      ),
+      menuCategory: each.menu_category,
+      menuCategoryId: each.menu_category_id,
+      menuCategoryImage: each.menu_category_image,
+      nextUrl: each.nextUrl,
     })
 
     const newTableMenuList = tableMenuList.map(each =>
@@ -63,14 +65,13 @@ class App extends Component {
         restaurantImage: data[0].restaurant_image,
         restaurantName: data[0].restaurant_name,
         tableId: data[0].table_id,
-        tableMenuList: newCategoryDishes,
+        tableMenuList: newTableMenuList,
         tableName: data[0].table_name,
       }
       console.log('new data', newData)
 
       this.setState({
         restrauntData: newData,
-        categoryList: newCategoryDishes,
       })
     }
   }
@@ -85,8 +86,8 @@ class App extends Component {
           {tableMenuList.map(each => (
             <Tabs
               eachMenu={each}
-              key={each.menu_category_id}
-              isActive={activeTabId === each.menu_category_id}
+              key={each.menuCategoryId}
+              isActive={activeTabId === each.menuCategoryId}
               updateTabId={this.updateTabId}
             />
           ))}
@@ -127,15 +128,15 @@ class App extends Component {
 
     if (tableMenuList !== undefined) {
       const newList = tableMenuList.filter(
-        each => each.menu_category_id === activeTabId,
+        each => each.menuCategoryId === activeTabId,
       )
 
       return (
         <ul>
           {newList.map(each => (
             <CategoryItems
-              eachItem={each.category_dishes}
-              key={each.menu_category_id}
+              eachItem={each.categoryDishes}
+              key={each.menuCategoryId}
               onClickMinus={this.onClickMinus}
               onClickPlus={this.onClickPlus}
             />
@@ -150,7 +151,6 @@ class App extends Component {
     const {restrauntData, cartSize} = this.state
 
     const {restaurantName, tableMenuList} = restrauntData
-    console.log('table menu list from render=', tableMenuList)
 
     return (
       <div>
