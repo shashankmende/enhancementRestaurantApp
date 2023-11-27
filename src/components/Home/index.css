@@ -5,3 +5,10 @@
 
   padding: 10px;
 }
+
+.loading-container {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,14 +1,17 @@
 import {Component} from 'react'
+
 import {Redirect} from 'react-router-dom'
 import Cookies from 'js-cookie'
+import Loader from 'react-loader-spinner'
 import Header from '../Header'
 import Tabs from '../Tabs'
 import CategoryItems from '../CategoryItems'
 import CartContext from '../../ReactContext/Context'
+
 import './index.css'
 
 class Home extends Component {
-  state = {restrauntData: '', activeTabId: '11'}
+  state = {restrauntData: '', activeTabId: '11', isLoading: false}
 
   componentDidMount() {
     this.getData()
@@ -154,8 +157,14 @@ class Home extends Component {
     return ''
   }
 
+  renderLoadingView = () => (
+    <div className="loading-container">
+      <Loader type="ThreeDots" size={35} color="blue" />
+    </div>
+  )
+
   render() {
-    const {restrauntData, cartSize} = this.state
+    const {restrauntData, isLoading} = this.state
 
     const {restaurantName, tableMenuList} = restrauntData
 
@@ -163,7 +172,9 @@ class Home extends Component {
       <div>
         <Header restaurantName={restaurantName} />
         {this.renderTabs()}
-        {this.renderCategoryItems(tableMenuList)}
+        {isLoading
+          ? this.renderLoadingView()
+          : this.renderCategoryItems(tableMenuList)}
       </div>
     )
   }
