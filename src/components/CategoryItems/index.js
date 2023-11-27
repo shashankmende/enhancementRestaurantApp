@@ -54,7 +54,7 @@ class CategoryItems extends Component {
     const {onClickPlus} = categoryProps
     const dishId = event.target.value
     const IncrementEachItem = this.incrementQuantity(dishId)
-    console.log('increment updated item=******', IncrementEachItem)
+
     this.setState({
       categoryProps: {...categoryProps, eachItem: IncrementEachItem},
     })
@@ -76,7 +76,7 @@ class CategoryItems extends Component {
 
         <button
           type="button"
-          value={dishId}
+          value={qty}
           className="quantity_button"
           onClick={this.onClickPlusBtn}
         >
