@@ -6,7 +6,7 @@
   padding: 10px;
   padding-left: 20px;
   padding-right: 20px;
-  box-shadow: 0px 0px 3px;
+  box-shadow: 0px 1px;
 }
 @media (max-width: 576px) {
   .header-container {
@@ -29,14 +29,27 @@
 .icons-container {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  width: 300px;
+  margin-right: 20px;
 }
 .cart_count {
   background-color: orange;
   color: white;
   height: 20px;
   width: 20px;
-  border-radius: 50%;
+  border-radius: 52%;
   text-align: center;
+}
+
+.logout {
+  color: white;
+  background-color: blue;
+  border: none;
+  border-radius: 15px;
+  font-size: 15px;
+  padding: 10px;
+  cursor: pointer;
+  outline: none;
 }

@@ -1,5 +1,6 @@
 import {Component} from 'react'
 import './index.css'
+import CartContext from '../../ReactContext/Context'
 
 class CategoryItems extends Component {
   state = {categoryProps: this.props}
@@ -54,7 +55,7 @@ class CategoryItems extends Component {
     const {onClickPlus} = categoryProps
     const dishId = event.target.value
     const IncrementEachItem = this.incrementQuantity(dishId)
-
+    console.log('increment updated item=******', IncrementEachItem)
     this.setState({
       categoryProps: {...categoryProps, eachItem: IncrementEachItem},
     })
@@ -76,7 +77,7 @@ class CategoryItems extends Component {
 
         <button
           type="button"
-          value={qty}
+          value={dishId}
           className="quantity_button"
           onClick={this.onClickPlusBtn}
         >
@@ -86,61 +87,85 @@ class CategoryItems extends Component {
     </>
   )
 
-  renderItems = eachItem => {
-    if (eachItem !== undefined) {
-      return (
-        <ul>
-          {eachItem.map(each => {
-            const {
-              dishId,
-              addonCat,
-              dishAvailability,
-              dishType,
-              dishCalories,
-              dishCurrency,
-              dishDescription,
-              dishImage,
-              dishName,
-              dishPrice,
-              nextUrl,
-              dishQuantity,
-            } = each
+  renderItems = eachItem => (
+    <CartContext.Consumer>
+      {value => {
+        const {cartList, addCartItem} = value
+        if (eachItem !== undefined) {
+          return (
+            <ul>
+              {eachItem.map(each => {
+                const {
+                  dishId,
+                  addonCat,
+                  dishAvailability,
+                  dishType,
+                  dishCalories,
+                  dishCurrency,
+                  dishDescription,
+                  dishImage,
+                  dishName,
+                  dishPrice,
+                  nextUrl,
+                  dishQuantity,
+                } = each
 
-            return (
-              <li className="category-list-item">
-                <img src={nextUrl} alt="isVeg" />
-                <div className="right-container">
-                  <div className="text-container">
-                    <h1>{dishName}</h1>
-                    <p>
-                      {dishCurrency}
-                      {'  '}
-                      {dishPrice}
-                    </p>
-                    <p>{dishDescription}</p>
+                const onClickAddToCart = () => {
+                  addCartItem(each, dishId)
+                }
 
-                    {this.customizableOption(dishQuantity, addonCat, dishId)}
-                    {addonCat.length !== 0 ? (
-                      <p className="customization-button">
-                        Customizations available
+                return (
+                  <li className="category-list-item">
+                    <img src={nextUrl} alt="isVeg" />
+                    <div className="right-container">
+                      <div className="text-container">
+                        <h1>{dishName}</h1>
+                        <p>
+                          {dishCurrency}
+                          {'  '}
+                          {dishPrice}
+                        </p>
+                        <p>{dishDescription}</p>
+
+                        {this.customizableOption(
+                          dishQuantity,
+                          addonCat,
+                          dishId,
+                        )}
+                        {addonCat.length !== 0 ? (
+                          <p className="customization-button">
+                            Customizations available
+                          </p>
+                        ) : (
+                          ''
+                        )}
+                        {dishAvailability ? (
+                          <button
+                            type="button"
+                            className="add-to-cart"
+                            onClick={onClickAddToCart}
+                          >
+                            ADD TO CART
+                          </button>
+                        ) : (
+                          ''
+                        )}
+                      </div>
+                      <p className="dish_calories">
+                        {dishCalories} {'  '} calories
                       </p>
-                    ) : (
-                      ''
-                    )}
-                  </div>
-                  <p className="dish_calories">
-                    {dishCalories} {'  '} calories
-                  </p>
-                  <img src={dishImage} className="dish_image" />
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-      )
-    }
-    return ''
-  }
+                      <img src={dishImage} className="dish_image" />
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          )
+        }
+        return ''
+      }}
+    </CartContext.Consumer>
+  )
 
   render() {
     const {categoryProps} = this.state

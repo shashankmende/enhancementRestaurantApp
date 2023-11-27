@@ -1,163 +1,124 @@
 import {Component} from 'react'
-import Header from './components/Header'
-import Tabs from './components/Tabs'
-import CategoryItems from './components/CategoryItems'
-import './App.css'
+
+import {BrowserRouter, Switch, Route} from 'react-router-dom'
+import Home from './components/Home'
+
+import Login from './components/Login'
+import CartContext from './ReactContext/Context'
+import Cart from './components/Cart'
+import ProtectedRoute from './components/ProtectedRoute'
 
 class App extends Component {
-  state = {restrauntData: '', activeTabId: '11', cartSize: 0}
+  state = {cartList: [], title: ''}
 
-  componentDidMount() {
-    this.getData()
-  }
+  addCartItem = (item, id) => {
+    const {cartList} = this.state
+    const isExist = cartList.filter(each => each.dishId === id)
+    console.log('is exist list=', isExist)
+    console.log('dish id=', id)
 
-  getData = async () => {
-    const apiUrl =
-      'https://run.mocky.io/v3/77a7e71b-804a-4fbd-822c-3e365d3482cc'
+    if (isExist.length !== 0) {
+      const dish = isExist.pop()
+      const index = cartList.findIndex(each => each.dishId === id)
+      console.log('index=', index)
 
-    const response = await fetch(apiUrl)
-    const data = await response.json()
-    console.log('response =', data)
-    const tableMenuList = data[0].table_menu_list
-
-    const categoryDishesFunction = each => ({
-      dishAvailability: each.dish_Availability,
-      dishType: each.dish_type,
-      dishCalories: each.dish_calories,
-      dishCurrency: each.dish_currency,
-      dishDescription: each.dish_description,
-      dishId: each.dish_id,
-      dishName: each.dish_name,
-      dishPrice: each.dish_price,
-      nextUrl: each.nextUrl,
-      dishImage: each.dish_image,
-      addonCat: each.addonCat,
-      dishQuantity: 0,
-    })
-
-    const tableMenuListFunction = each => ({
-      categoryDishes: each.category_dishes.map(eachCategory =>
-        categoryDishesFunction(eachCategory),
-      ),
-      menuCategory: each.menu_category,
-      menuCategoryId: each.menu_category_id,
-      menuCategoryImage: each.menu_category_image,
-      nextUrl: each.nextUrl,
-    })
-
-    const newTableMenuList = tableMenuList.map(each =>
-      tableMenuListFunction(each),
-    )
-
-    const newCategoryDishes = newTableMenuList.map(each => {
-      const {categoryDishes} = each
-      const innerResult = categoryDishes.map(eachItem =>
-        categoryDishesFunction(eachItem),
-      )
-      return innerResult
-    })
-
-    if (response.ok === true) {
-      const newData = {
-        branchName: data[0].branch_name,
-        nextUrl: data[0].nextUrl,
-        restaurantId: data[0].restaurant_id,
-        restaurantImage: data[0].restaurant_image,
-        restaurantName: data[0].restaurant_name,
-        tableId: data[0].table_id,
-        tableMenuList: newTableMenuList,
-        tableName: data[0].table_name,
-      }
-      console.log('new data', newData)
+      const {dishQuantity} = dish
+      const updatedQuantity = dishQuantity + 1
+      const newDish = {...dish, dishQuantity: updatedQuantity}
+      cartList.splice(index, 1, newDish)
 
       this.setState({
-        restrauntData: newData,
-      })
-    }
-  }
-
-  renderTabs = () => {
-    const {restrauntData, activeTabId} = this.state
-    const {tableMenuList} = restrauntData
-    console.log('tablemenu list from function', tableMenuList)
-    if (tableMenuList !== undefined) {
-      return (
-        <ul className="tabs-container">
-          {tableMenuList.map(each => (
-            <Tabs
-              eachMenu={each}
-              key={each.menuCategoryId}
-              isActive={activeTabId === each.menuCategoryId}
-              updateTabId={this.updateTabId}
-            />
-          ))}
-        </ul>
-      )
-    }
-    return ''
-  }
-
-  updateTabId = tabId => {
-    this.setState({
-      activeTabId: tabId,
-    })
-  }
-
-  onClickMinus = () => {
-    const {cartSize} = this.state
-    if (cartSize >= 1) {
-      this.setState({
-        cartSize: cartSize - 1,
+        cartList: [...cartList],
       })
     } else {
       this.setState({
-        cartSize: 0,
+        cartList: [...cartList, item],
       })
     }
   }
 
-  onClickPlus = () => {
-    const {cartSize} = this.state
+  updateTitle = title => {
     this.setState({
-      cartSize: cartSize + 1,
+      title,
     })
   }
 
-  renderCategoryItems = tableMenuList => {
-    const {activeTabId} = this.state
+  removeAllCartItems = () => {
+    this.setState({
+      cartList: [],
+    })
+  }
 
-    if (tableMenuList !== undefined) {
-      const newList = tableMenuList.filter(
-        each => each.menuCategoryId === activeTabId,
-      )
-
-      return (
-        <ul>
-          {newList.map(each => (
-            <CategoryItems
-              eachItem={each.categoryDishes}
-              key={each.menuCategoryId}
-              onClickMinus={this.onClickMinus}
-              onClickPlus={this.onClickPlus}
-            />
-          ))}
-        </ul>
-      )
+  decrementCartItemQuantity = id => {
+    const {cartList} = this.state
+    const dish = cartList.filter(each => each.dishId === id)
+    const dt = dish[0].dishQuantity
+    console.log('dish and its quantity=', dish, dt)
+    if (dt === 1) {
+      const index = cartList.findIndex(each => each.dishId === id)
+      cartList.splice(index, 1)
+      this.setState({
+        cartList,
+      })
+    } else {
+      this.setState({
+        cartList: cartList.map(each => {
+          if (each.dishId === id) {
+            const {dishQuantity} = each
+            return {...each, dishQuantity: dishQuantity - 1}
+          }
+          return each
+        }),
+      })
     }
-    return ''
+  }
+
+  incrementCartItemQuantity = id => {
+    const {cartList} = this.state
+    this.setState({
+      cartList: cartList.map(each => {
+        if (each.dishId === id) {
+          const {dishQuantity} = each
+          return {...each, dishQuantity: dishQuantity + 1}
+        }
+        return each
+      }),
+    })
+  }
+
+  removeCartItem = id => {
+    const {cartList} = this.state
+    this.setState({
+      cartList: cartList.filter(each => each.dishId !== id),
+    })
   }
 
   render() {
-    const {restrauntData, cartSize} = this.state
-
-    const {restaurantName, tableMenuList} = restrauntData
-
+    const {cartList, title} = this.state
+    console.log('cart list=', cartList)
     return (
-      <div>
-        <Header restaurantName={restaurantName} cartSize={cartSize} />
-        {this.renderTabs()}
-        {this.renderCategoryItems(tableMenuList)}
-      </div>
+      <>
+        <CartContext.Provider
+          value={{
+            cartList,
+            title,
+            updateTitle: () => {},
+            decrementCartItemQuantity: this.decrementCartItemQuantity,
+            addCartItem: this.addCartItem,
+            removeAllCartItems: this.removeAllCartItems,
+            removeCartItem: this.removeCartItem,
+            incrementCartItemQuantity: this.incrementCartItemQuantity,
+          }}
+        >
+          <BrowserRouter>
+            <Switch>
+              <Route path="/login" component={Login} />
+              <ProtectedRoute exact path="/" component={Home} />
+              <ProtectedRoute exact path="/cart" component={Cart} />
+            </Switch>
+          </BrowserRouter>
+        </CartContext.Provider>
+      </>
     )
   }
 }

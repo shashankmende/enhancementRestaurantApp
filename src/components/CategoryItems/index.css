@@ -2,6 +2,10 @@
   list-style-type: none;
   display: flex;
   flex-direction: row;
+  background-color: bisque;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  padding: 10px;
 }
 
 .text-container {
@@ -49,4 +53,18 @@
 .not-available {
   color: red;
   font-family: 'Roboto';
+}
+
+.add-to-cart {
+  align-items: flex-end;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #5291e3;
+  border: none;
+  color: white;
+  font-weight: 300;
+  cursor: pointer;
+  outline: none;
+  width: 150px;
+  margin-top: 15px;
 }

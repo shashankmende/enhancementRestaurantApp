@@ -1,18 +1,45 @@
-import {AiOutlineShoppingCart} from 'react-icons/ai'
+//  import {AiOutlineShoppingCart} from 'react-icons/ai'
 import './index.css'
+import Cookies from 'js-cookie'
+import {Link, withRouter} from 'react-router-dom'
+import CartContext from '../../ReactContext/Context'
 
 const Header = props => {
-  const {restaurantName, cartSize} = props
+  const {restaurantName} = props
   return (
-    <div className="header-container">
-      <h1>{restaurantName}</h1>
-      <div className="icons-container">
-        <p className="my-orders">My Orders</p>
-        <AiOutlineShoppingCart size={40} />
-        <p className="cart_count">{cartSize}</p>
-      </div>
-    </div>
+    <CartContext.Consumer>
+      {value => {
+        const {cartList} = value
+
+        const onClickLogout = () => {
+          Cookies.remove('jwt_token')
+          const {history} = props
+          history.replace('/login')
+        }
+
+        return (
+          <div className="header-container">
+            <Link to="/">
+              <h1>{restaurantName}</h1>
+            </Link>
+
+            <div className="icons-container">
+              <p className="my-orders">My Orders</p>
+              <Link to="/cart">
+                {/* <AiOutlineShoppingCart size={40} />  */}
+                Cart
+              </Link>
+              <p className="cart_count">{cartList.length}</p>
+
+              <button className="logout" type="button" onClick={onClickLogout}>
+                Logout
+              </button>
+            </div>
+          </div>
+        )
+      }}
+    </CartContext.Consumer>
   )
 }
 
-export default Header
+export default withRouter(Header)
