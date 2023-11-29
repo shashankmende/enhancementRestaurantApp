@@ -83,6 +83,27 @@ class Home extends Component {
     }
   }
 
+  updateData = (dishId, qty) => {
+    console.log('updating restaurant data is initaited++++++++++')
+    const {restrauntData} = this.state
+    const {tableMenuList} = restrauntData
+    this.setState({
+      restrauntData: {
+        ...restrauntData,
+        tableMenuList: tableMenuList.map(each => ({
+          ...each,
+          categoryDishes: each.categoryDishes.map(ech => {
+            if (ech.dishId === dishId) {
+              return {...ech, dishQuantity: qty}
+            }
+            return ech
+          }),
+        })),
+      },
+    })
+    console.log('updating restaurant data is finished--------')
+  }
+
   renderTabs = () => {
     const jwtToken = Cookies.get('jwt_token')
     if (jwtToken === undefined) {
@@ -154,6 +175,7 @@ class Home extends Component {
               key={each.menuCategoryId}
               onClickMinus={this.onClickMinus}
               onClickPlus={this.onClickPlus}
+              updateData={this.updateData}
             />
           ))}
         </ul>
@@ -172,14 +194,13 @@ class Home extends Component {
     const {restrauntData, isLoading} = this.state
 
     const {restaurantName, tableMenuList} = restrauntData
+    console.log('restaurant data from home//////////', restrauntData)
 
     return (
       <div>
         <Header restaurantName={restaurantName} />
         {this.renderTabs()}
-        {/* isLoading
-          ? this.renderLoadingView()
-          : this.renderCategoryItems(tableMenuList) */}
+
         {isLoading
           ? this.renderCategoryItems(tableMenuList)
           : this.renderLoadingView()}

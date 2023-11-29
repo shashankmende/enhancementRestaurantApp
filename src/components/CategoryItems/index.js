@@ -24,6 +24,7 @@ class CategoryItems extends Component {
   incrementQuantity = id => {
     const {categoryProps} = this.state
     const {eachItem} = categoryProps
+
     const item = eachItem.map(each => {
       if (each.dishId === id) {
         const {dishQuantity} = each
@@ -63,113 +64,186 @@ class CategoryItems extends Component {
   }
 
   customizableOption = (qty, addonCat, dishId) => (
-    <>
-      <div className="buttons-container">
-        <button
-          type="button"
-          className="quantity_button"
-          value={dishId}
-          onClick={this.onClickMinusBtn}
-        >
-          -
-        </button>
-        <p>{qty}</p>
-
-        <button
-          type="button"
-          value={dishId}
-          className="quantity_button"
-          onClick={this.onClickPlusBtn}
-        >
-          +
-        </button>
-      </div>
-    </>
-  )
-
-  renderItems = eachItem => (
     <CartContext.Consumer>
       {value => {
-        const {addCartItem} = value
-        if (eachItem !== undefined) {
-          return (
-            <ul>
-              {eachItem.map(each => {
-                const {
-                  dishId,
-                  addonCat,
-                  dishAvailability,
+        const {cartList} = value
+        if (cartList.length !== 0) {
+          const item = cartList.filter(each => each.dishId === dishId)
 
-                  dishCalories,
-                  dishCurrency,
-                  dishDescription,
-                  dishImage,
-                  dishName,
-                  dishPrice,
-                  nextUrl,
-                  dishQuantity,
-                } = each
+          if (item[0] !== undefined) {
+            return (
+              <>
+                <div className="buttons-container">
+                  <button
+                    type="button"
+                    className="quantity_button"
+                    value={dishId}
+                    onClick={this.onClickMinusBtn}
+                  >
+                    -
+                  </button>
+                  <p>{item[0].dishQuantity}</p>
 
-                const onClickAddToCart = () => {
-                  addCartItem(each, dishId)
-                }
-
-                return (
-                  <li className="category-list-item">
-                    <img src={nextUrl} alt="isVeg" />
-                    <div className="right-container">
-                      <div className="text-container">
-                        <h1>{dishName}</h1>
-                        <p>
-                          {dishCurrency}
-                          {'  '}
-                          {dishPrice}
-                        </p>
-                        <p>{dishDescription}</p>
-
-                        {dishAvailability ? (
-                          this.customizableOption(
-                            dishQuantity,
-                            addonCat,
-                            dishId,
-                          )
-                        ) : (
-                          <p className="not-available">Not available</p>
-                        )}
-                        {addonCat.length !== 0 ? (
-                          <p className="customization-button">
-                            Customizations available
-                          </p>
-                        ) : (
-                          ''
-                        )}
-                        {dishAvailability && dishQuantity > 0 ? (
-                          <button
-                            type="button"
-                            className="add-to-cart"
-                            onClick={onClickAddToCart}
-                          >
-                            ADD TO CART
-                          </button>
-                        ) : (
-                          ''
-                        )}
-                      </div>
-                      <p className="dish_calories">
-                        {dishCalories} {'  '} calories
-                      </p>
-                      <img src={dishImage} className="dish_image" alt="item" />
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
-          )
+                  <button
+                    type="button"
+                    value={dishId}
+                    className="quantity_button"
+                    onClick={this.onClickPlusBtn}
+                  >
+                    +
+                  </button>
+                </div>
+              </>
+            )
+          }
         }
-        return ''
+        console.log('entered into empty cart')
+        return (
+          <>
+            <div className="buttons-container">
+              <button
+                type="button"
+                className="quantity_button"
+                value={dishId}
+                onClick={this.onClickMinusBtn}
+              >
+                -
+              </button>
+              <p>{qty}</p>
+
+              <button
+                type="button"
+                value={dishId}
+                className="quantity_button"
+                onClick={this.onClickPlusBtn}
+              >
+                +
+              </button>
+            </div>
+          </>
+        )
       }}
     </CartContext.Consumer>
   )
+
+  renderQuantity = (cartList, dishId) => {
+    const newItem = cartList.filter(each => each.dishId === dishId)
+    if (newItem[0] !== undefined) {
+      const {dishQuantity} = newItem[0]
+      console.log('new quantity', dishQuantity)
+      return dishQuantity
+    }
+    return 1
+  }
+
+  renderItems = eachItem => {
+    const {categoryProps} = this.state
+    const {updateData} = categoryProps
+
+    return (
+      <CartContext.Consumer>
+        {value => {
+          const {cartList, addCartItem} = value
+          if (eachItem !== undefined) {
+            return (
+              <ul>
+                {eachItem.map(each => {
+                  const {
+                    dishId,
+                    addonCat,
+                    dishAvailability,
+
+                    dishCalories,
+                    dishCurrency,
+                    dishDescription,
+                    dishImage,
+                    dishName,
+                    dishPrice,
+                    nextUrl,
+                    dishQuantity,
+                  } = each
+
+                  const onClickAddToCart = () => {
+                    addCartItem(each, dishId)
+                    updateData(dishId, dishQuantity)
+                  }
+
+                  return (
+                    <li className="category-list-item">
+                      <img src={nextUrl} alt="isVeg" />
+                      <div className="right-container">
+                        <div className="text-container">
+                          <h1>{dishName}</h1>
+                          <p>
+                            {dishCurrency}
+                            {'  '}
+                            {dishPrice}
+                          </p>
+                          <p>{dishDescription}</p>
+                          {dishAvailability ? (
+                            this.customizableOption(
+                              dishQuantity,
+                              addonCat,
+                              dishId,
+                            )
+                          ) : (
+                            <p className="not-available">Not available</p>
+                          )}
+
+                          {addonCat.length !== 0 ? (
+                            <p className="customization-button">
+                              Customizations available
+                            </p>
+                          ) : (
+                            ''
+                          )}
+
+                          {dishAvailability && dishQuantity > 0 ? (
+                            <button
+                              type="button"
+                              className="add-to-cart"
+                              onClick={onClickAddToCart}
+                            >
+                              ADD TO CART
+                            </button>
+                          ) : (
+                            ''
+                          )}
+
+                          {/*   cartList.length > 0 &&
+                          dishAvailability &&
+                          this.renderQuantity(cartList, dishId) > 0 ? (
+                            <button
+                              type="button"
+                              className="add-to-cart"
+                              onClick={onClickAddToCart}
+                            >
+                              ADD TO CART
+                            </button>
+                          ) : (
+                            ''
+                          ) */}
+                        </div>
+                        <p className="dish_calories">
+                          {dishCalories} {'  '} calories
+                        </p>
+                        <img
+                          src={dishImage}
+                          className="dish_image"
+                          alt="item"
+                        />
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            )
+          }
+          return ''
+        }}
+      </CartContext.Consumer>
+    )
+  }
 
   render() {
     const {categoryProps} = this.state
