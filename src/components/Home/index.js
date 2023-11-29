@@ -2,11 +2,11 @@ import {Component} from 'react'
 
 import {Redirect} from 'react-router-dom'
 import Cookies from 'js-cookie'
-import Loader from 'react-loader-spinner'
+import {Rings} from 'react-loader-spinner'
 import Header from '../Header'
 import Tabs from '../Tabs'
 import CategoryItems from '../CategoryItems'
-import CartContext from '../../ReactContext/Context'
+//  import CartContext from '../../Context/CartContext'
 
 import './index.css'
 
@@ -38,7 +38,7 @@ class Home extends Component {
       nextUrl: each.nexturl,
       dishImage: each.dish_image,
       addonCat: each.addonCat,
-      dishQuantity: 1,
+      dishQuantity: 0,
     })
 
     const tableMenuListFunction = each => ({
@@ -55,13 +55,13 @@ class Home extends Component {
       tableMenuListFunction(each),
     )
 
-    const newCategoryDishes = newTableMenuList.map(each => {
+    /*    const newCategoryDishes = newTableMenuList.map(each => {
       const {categoryDishes} = each
       const innerResult = categoryDishes.map(eachItem =>
         categoryDishesFunction(eachItem),
       )
       return innerResult
-    })
+    })  */
 
     if (response.ok === true) {
       const newData = {
@@ -78,6 +78,7 @@ class Home extends Component {
 
       this.setState({
         restrauntData: newData,
+        isLoading: true,
       })
     }
   }
@@ -108,9 +109,13 @@ class Home extends Component {
   }
 
   updateTabId = tabId => {
-    this.setState({
-      activeTabId: tabId,
-    })
+    this.setState(
+      {
+        activeTabId: tabId,
+        isLoading: false,
+      },
+      this.getData,
+    )
   }
 
   onClickMinus = () => {
@@ -159,7 +164,7 @@ class Home extends Component {
 
   renderLoadingView = () => (
     <div className="loading-container">
-      <Loader type="ThreeDots" size={35} color="blue" />
+      <Rings type="Puff" color="#00BFFF" height={550} width={80} />
     </div>
   )
 
@@ -172,9 +177,12 @@ class Home extends Component {
       <div>
         <Header restaurantName={restaurantName} />
         {this.renderTabs()}
-        {isLoading
+        {/* isLoading
           ? this.renderLoadingView()
-          : this.renderCategoryItems(tableMenuList)}
+          : this.renderCategoryItems(tableMenuList) */}
+        {isLoading
+          ? this.renderCategoryItems(tableMenuList)
+          : this.renderLoadingView()}
       </div>
     )
   }

@@ -1,7 +1,7 @@
 import './index.css'
 //  import {AiFillCloseCircle} from 'react-icons/ai'
 
-import CartContext from '../../ReactContext/Context'
+import CartContext from '../../Context/CartContext'
 
 const CartItem = props => {
   const {dish} = props

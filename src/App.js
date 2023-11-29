@@ -4,9 +4,10 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom'
 import Home from './components/Home'
 
 import Login from './components/Login'
-import CartContext from './ReactContext/Context'
+import CartContext from './Context/CartContext'
 import Cart from './components/Cart'
 import ProtectedRoute from './components/ProtectedRoute'
+import NotFound from './components/NotFound'
 
 class App extends Component {
   state = {cartList: [], title: ''}
@@ -115,6 +116,7 @@ class App extends Component {
               <Route path="/login" component={Login} />
               <ProtectedRoute exact path="/" component={Home} />
               <ProtectedRoute exact path="/cart" component={Cart} />
+              <Route component={NotFound} />
             </Switch>
           </BrowserRouter>
         </CartContext.Provider>

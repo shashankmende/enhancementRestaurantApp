@@ -2,7 +2,7 @@
 import './index.css'
 import Cookies from 'js-cookie'
 import {Link, withRouter} from 'react-router-dom'
-import CartContext from '../../ReactContext/Context'
+import CartContext from '../../Context/CartContext'
 
 const Header = props => {
   const {restaurantName} = props

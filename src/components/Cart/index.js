@@ -1,6 +1,6 @@
 import './index.css'
 
-import CartContext from '../../ReactContext/Context'
+import CartContext from '../../Context/CartContext'
 import Header from '../Header'
 import Empty from '../EmptyView'
 import CartItem from '../CartItem'

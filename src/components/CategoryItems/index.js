@@ -1,6 +1,6 @@
 import {Component} from 'react'
 import './index.css'
-import CartContext from '../../ReactContext/Context'
+import CartContext from '../../Context/CartContext'
 
 class CategoryItems extends Component {
   state = {categoryProps: this.props}
@@ -90,7 +90,7 @@ class CategoryItems extends Component {
   renderItems = eachItem => (
     <CartContext.Consumer>
       {value => {
-        const {cartList, addCartItem} = value
+        const {addCartItem} = value
         if (eachItem !== undefined) {
           return (
             <ul>
@@ -99,7 +99,7 @@ class CategoryItems extends Component {
                   dishId,
                   addonCat,
                   dishAvailability,
-                  dishType,
+
                   dishCalories,
                   dishCurrency,
                   dishDescription,
@@ -127,10 +127,14 @@ class CategoryItems extends Component {
                         </p>
                         <p>{dishDescription}</p>
 
-                        {this.customizableOption(
-                          dishQuantity,
-                          addonCat,
-                          dishId,
+                        {dishAvailability ? (
+                          this.customizableOption(
+                            dishQuantity,
+                            addonCat,
+                            dishId,
+                          )
+                        ) : (
+                          <p className="not-available">Not available</p>
                         )}
                         {addonCat.length !== 0 ? (
                           <p className="customization-button">
@@ -139,7 +143,7 @@ class CategoryItems extends Component {
                         ) : (
                           ''
                         )}
-                        {dishAvailability ? (
+                        {dishAvailability && dishQuantity > 0 ? (
                           <button
                             type="button"
                             className="add-to-cart"
@@ -154,7 +158,7 @@ class CategoryItems extends Component {
                       <p className="dish_calories">
                         {dishCalories} {'  '} calories
                       </p>
-                      <img src={dishImage} className="dish_image" />
+                      <img src={dishImage} className="dish_image" alt="item" />
                     </div>
                   </li>
                 )
