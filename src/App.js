@@ -12,7 +12,7 @@ import NotFound from './components/NotFound'
 class App extends Component {
   state = {cartList: [], title: ''}
 
-  addCartItem = (item, id) => {
+  addCartItem = (item, id, mId) => {
     const {cartList} = this.state
     const isExist = cartList.filter(each => each.dishId === id)
     console.log('is exist list=', isExist)
@@ -33,7 +33,7 @@ class App extends Component {
       })
     } else {
       this.setState({
-        cartList: [...cartList, item],
+        cartList: [...cartList, {...item, menuCategoryId: mId}],
       })
     }
   }

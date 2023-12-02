@@ -1,153 +1,23 @@
-import {Component} from 'react'
 import './index.css'
 import CartContext from '../../Context/CartContext'
+import Quantity from '../Quantity'
 
-class CategoryItems extends Component {
-  state = {categoryProps: this.props}
+const CategoryItems = props => {
+  const {eachItem, categoryId, onClickMinus, onClickPlus, updateData} = props
 
-  DecreaseQuantity = id => {
-    const {categoryProps} = this.state
-    const {eachItem} = categoryProps
-    const item = eachItem.map(each => {
-      if (each.dishId === id) {
-        const {dishQuantity} = each
-        if (dishQuantity >= 1) {
-          return {...each, dishQuantity: dishQuantity - 1}
-        }
-        return each
-      }
-      return each
-    })
-    return item
-  }
-
-  incrementQuantity = id => {
-    const {categoryProps} = this.state
-    const {eachItem} = categoryProps
-
-    const item = eachItem.map(each => {
-      if (each.dishId === id) {
-        const {dishQuantity} = each
-
-        return {...each, dishQuantity: dishQuantity + 1}
-      }
-      return each
-    })
-    return item
-  }
-
-  onClickMinusBtn = event => {
-    const {categoryProps} = this.state
-
-    const {onClickMinus} = categoryProps
-    const dishId = event.target.value
-    const updatedEachItem = this.DecreaseQuantity(dishId)
-    console.log('updated eachItem =/////////', updatedEachItem)
-    console.log('+++++++******', event.target.value)
-    this.setState({
-      categoryProps: {...categoryProps, eachItem: updatedEachItem},
-    })
-
-    onClickMinus()
-  }
-
-  onClickPlusBtn = event => {
-    const {categoryProps} = this.state
-    const {onClickPlus} = categoryProps
-    const dishId = event.target.value
-    const IncrementEachItem = this.incrementQuantity(dishId)
-    console.log('increment updated item=******', IncrementEachItem)
-    this.setState({
-      categoryProps: {...categoryProps, eachItem: IncrementEachItem},
-    })
-    onClickPlus()
-  }
-
-  customizableOption = (qty, addonCat, dishId) => (
-    <CartContext.Consumer>
-      {value => {
-        const {cartList} = value
-        if (cartList.length !== 0) {
-          const item = cartList.filter(each => each.dishId === dishId)
-
-          if (item[0] !== undefined) {
-            console.log(
-              'not empty item88888888***********',
-              item[0].dishQuantity,
-            )
-            return (
-              <>
-                <div className="buttons-container">
-                  <button
-                    type="button"
-                    className="quantity_button"
-                    value={dishId}
-                    onClick={this.onClickMinusBtn}
-                  >
-                    -
-                  </button>
-                  <p>{item[0].dishQuantity}</p>
-
-                  <button
-                    type="button"
-                    value={dishId}
-                    className="quantity_button"
-                    onClick={this.onClickPlusBtn}
-                  >
-                    +
-                  </button>
-                </div>
-              </>
-            )
-          }
-        }
-        console.log('entered into empty cart++++++++++++++')
-        return (
-          <>
-            <div className="buttons-container">
-              <button
-                type="button"
-                className="quantity_button"
-                value={dishId}
-                onClick={this.onClickMinusBtn}
-              >
-                -
-              </button>
-              <p>{qty}</p>
-
-              <button
-                type="button"
-                value={dishId}
-                className="quantity_button"
-                onClick={this.onClickPlusBtn}
-              >
-                +
-              </button>
-            </div>
-          </>
-        )
-      }}
-    </CartContext.Consumer>
-  )
-
-  renderQuantity = (cartList, dishId) => {
-    const newItem = cartList.filter(each => each.dishId === dishId)
-    if (newItem[0] !== undefined) {
-      const {dishQuantity} = newItem[0]
-      console.log('new quantity', dishQuantity)
-      return dishQuantity
+  const renderItems = () => {
+    const onClickPlusInCategoryItemsFunction = (dishId, quantity) => {
+      onClickPlus(dishId, quantity, categoryId)
     }
-    return 1
-  }
 
-  renderItems = eachItem => {
-    const {categoryProps} = this.state
-    const {updateData} = categoryProps
+    const onClickMinusInCategoryItemsFunction = (dishId, quantity) => {
+      onClickMinus(dishId, quantity, categoryId)
+    }
 
     return (
       <CartContext.Consumer>
         {value => {
-          const {cartList, addCartItem} = value
+          const {addCartItem} = value
           if (eachItem !== undefined) {
             return (
               <ul>
@@ -168,7 +38,7 @@ class CategoryItems extends Component {
                   } = each
 
                   const onClickAddToCart = () => {
-                    addCartItem(each, dishId)
+                    addCartItem(each, dishId, categoryId)
                     updateData(dishId, dishQuantity)
                   }
 
@@ -185,11 +55,17 @@ class CategoryItems extends Component {
                           </p>
                           <p>{dishDescription}</p>
                           {dishAvailability ? (
-                            this.customizableOption(
-                              dishQuantity,
-                              addonCat,
-                              dishId,
-                            )
+                            <Quantity
+                              item={each}
+                              quantity={dishQuantity}
+                              dishId={dishId}
+                              onClickPlusInCategory={
+                                onClickPlusInCategoryItemsFunction
+                              }
+                              onClickMinusInCategory={
+                                onClickMinusInCategoryItemsFunction
+                              }
+                            />
                           ) : (
                             <p className="not-available">Not available</p>
                           )}
@@ -213,20 +89,6 @@ class CategoryItems extends Component {
                           ) : (
                             ''
                           )}
-
-                          {/*   cartList.length > 0 &&
-                          dishAvailability &&
-                          this.renderQuantity(cartList, dishId) > 0 ? (
-                            <button
-                              type="button"
-                              className="add-to-cart"
-                              onClick={onClickAddToCart}
-                            >
-                              ADD TO CART
-                            </button>
-                          ) : (
-                            ''
-                          ) */}
                         </div>
                         <p className="dish_calories">
                           {dishCalories} {'  '} calories
@@ -249,12 +111,8 @@ class CategoryItems extends Component {
     )
   }
 
-  render() {
-    const {categoryProps} = this.state
-    const {eachItem} = categoryProps
-    console.log('each item from items', eachItem)
-    return this.renderItems(eachItem)
-  }
+  console.log('each item from items', eachItem)
+  return <>{renderItems(eachItem)}</>
 }
 
 export default CategoryItems

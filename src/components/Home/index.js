@@ -139,23 +139,57 @@ class Home extends Component {
     )
   }
 
-  onClickMinus = () => {
-    const {cartSize} = this.state
-    if (cartSize >= 1) {
+  onClickMinus = (id, qty, mId) => {
+    console.log('minus function in home is triggered', id, qty, mId)
+
+    const {restrauntData} = this.state
+    const {tableMenuList} = restrauntData
+    console.log('plus function is triggred ', id, qty, mId)
+    if (qty > 0) {
       this.setState({
-        cartSize: cartSize - 1,
-      })
-    } else {
-      this.setState({
-        cartSize: 0,
+        restrauntData: {
+          ...restrauntData,
+          tableMenuList: tableMenuList.map(each => {
+            if (each.menuCategoryId === mId) {
+              const {categoryDishes} = each
+              const newCategoryDishes = categoryDishes.map(ech => {
+                if (ech.dishId === id) {
+                  const {dishQuantity} = ech
+                  return {...ech, dishQuantity: dishQuantity - 1}
+                }
+                return ech
+              })
+              return {...each, categoryDishes: newCategoryDishes}
+            }
+            return each
+          }),
+        },
       })
     }
   }
 
-  onClickPlus = () => {
-    const {cartSize} = this.state
+  onClickPlus = (id, qty, mId) => {
+    const {restrauntData} = this.state
+    const {tableMenuList} = restrauntData
+    console.log('plus function is triggred ', id, qty, mId)
     this.setState({
-      cartSize: cartSize + 1,
+      restrauntData: {
+        ...restrauntData,
+        tableMenuList: tableMenuList.map(each => {
+          if (each.menuCategoryId === mId) {
+            const {categoryDishes} = each
+            const newCategoryDishes = categoryDishes.map(ech => {
+              if (ech.dishId === id) {
+                const {dishQuantity} = ech
+                return {...ech, dishQuantity: dishQuantity + 1}
+              }
+              return ech
+            })
+            return {...each, categoryDishes: newCategoryDishes}
+          }
+          return each
+        }),
+      },
     })
   }
 
@@ -172,6 +206,7 @@ class Home extends Component {
           {newList.map(each => (
             <CategoryItems
               eachItem={each.categoryDishes}
+              categoryId={each.menuCategoryId}
               key={each.menuCategoryId}
               onClickMinus={this.onClickMinus}
               onClickPlus={this.onClickPlus}
