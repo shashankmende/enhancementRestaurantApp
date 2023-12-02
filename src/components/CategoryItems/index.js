@@ -71,6 +71,10 @@ class CategoryItems extends Component {
           const item = cartList.filter(each => each.dishId === dishId)
 
           if (item[0] !== undefined) {
+            console.log(
+              'not empty item88888888***********',
+              item[0].dishQuantity,
+            )
             return (
               <>
                 <div className="buttons-container">
@@ -97,7 +101,7 @@ class CategoryItems extends Component {
             )
           }
         }
-        console.log('entered into empty cart')
+        console.log('entered into empty cart++++++++++++++')
         return (
           <>
             <div className="buttons-container">
