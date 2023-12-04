@@ -4,7 +4,7 @@ const Quantity = props => {
   const {
     quantity,
     dishId,
-    item,
+
     onClickPlusInCategory,
     onClickMinusInCategory,
   } = props

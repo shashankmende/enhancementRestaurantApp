@@ -69,7 +69,7 @@ class Login extends Component {
     return (
       <div className="bg-container">
         <form className="form-container">
-          <h1>UNI Resto Cafe</h1>
+          <h1 className="restaurant-name">UNI Resto Cafe</h1>
           <div className="username-container">
             <label htmlFor="username" className="username-label">
               USERNAME

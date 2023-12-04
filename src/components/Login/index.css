@@ -3,17 +3,17 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #000000;
+
   height: 100vh;
-  border: 2px solid orange;
 }
 .form-container {
   width: 30%;
   display: flex;
   flex-direction: column;
-  background-color: #272727;
+
   border-radius: 8px;
   padding: 20px;
+  box-shadow: 1px 2px 5px 2px;
 }
 
 .webiste-logo {
@@ -34,7 +34,7 @@
   margin-bottom: 25px;
 }
 .username-label {
-  color: white;
+  color: black;
   font-family: 'Roboto';
   margin-bottom: 10px;
 }
@@ -44,7 +44,7 @@
   padding: 15px;
   border: 1px solid #64748b;
   border-radius: 8px;
-  color: white;
+  color: black;
 }
 
 .login-btn {
@@ -60,4 +60,10 @@
 .error-msg {
   color: red;
   font-family: 'Roboto';
+}
+
+.restaurant-name {
+  color: black;
+  font-family: 'Roboto';
+  text-align: center;
 }

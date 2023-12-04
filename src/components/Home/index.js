@@ -2,7 +2,7 @@ import {Component} from 'react'
 
 import {Redirect} from 'react-router-dom'
 import Cookies from 'js-cookie'
-import {Rings} from 'react-loader-spinner'
+import Loader from 'react-loader-spinner'
 import Header from '../Header'
 import Tabs from '../Tabs'
 import CategoryItems from '../CategoryItems'
@@ -55,14 +55,6 @@ class Home extends Component {
       tableMenuListFunction(each),
     )
 
-    /*    const newCategoryDishes = newTableMenuList.map(each => {
-      const {categoryDishes} = each
-      const innerResult = categoryDishes.map(eachItem =>
-        categoryDishesFunction(eachItem),
-      )
-      return innerResult
-    })  */
-
     if (response.ok === true) {
       const newData = {
         branchName: data[0].branch_name,
@@ -84,7 +76,6 @@ class Home extends Component {
   }
 
   updateData = (dishId, qty) => {
-    console.log('updating restaurant data is initaited++++++++++')
     const {restrauntData} = this.state
     const {tableMenuList} = restrauntData
     this.setState({
@@ -101,20 +92,19 @@ class Home extends Component {
         })),
       },
     })
-    console.log('updating restaurant data is finished--------')
   }
 
   renderTabs = () => {
     const jwtToken = Cookies.get('jwt_token')
     if (jwtToken === undefined) {
-      ;<Redirect to="/login" />
+      return <Redirect to="/login" />
     }
     const {restrauntData, activeTabId} = this.state
     const {tableMenuList} = restrauntData
-    console.log('tablemenu list from function', tableMenuList)
+
     if (tableMenuList !== undefined) {
       return (
-        <ul className="tabs-container">
+        <div className="tabs-container">
           {tableMenuList.map(each => (
             <Tabs
               eachMenu={each}
@@ -123,7 +113,7 @@ class Home extends Component {
               updateTabId={this.updateTabId}
             />
           ))}
-        </ul>
+        </div>
       )
     }
     return ''
@@ -140,11 +130,9 @@ class Home extends Component {
   }
 
   onClickMinus = (id, qty, mId) => {
-    console.log('minus function in home is triggered', id, qty, mId)
-
     const {restrauntData} = this.state
     const {tableMenuList} = restrauntData
-    console.log('plus function is triggred ', id, qty, mId)
+
     if (qty > 0) {
       this.setState({
         restrauntData: {
@@ -171,7 +159,7 @@ class Home extends Component {
   onClickPlus = (id, qty, mId) => {
     const {restrauntData} = this.state
     const {tableMenuList} = restrauntData
-    console.log('plus function is triggred ', id, qty, mId)
+
     this.setState({
       restrauntData: {
         ...restrauntData,
@@ -221,7 +209,7 @@ class Home extends Component {
 
   renderLoadingView = () => (
     <div className="loading-container">
-      <Rings type="Puff" color="#00BFFF" height={550} width={80} />
+      <Loader type="ThreeDots" color="#00BFFF" width={30} height={80} />
     </div>
   )
 
@@ -229,7 +217,6 @@ class Home extends Component {
     const {restrauntData, isLoading} = this.state
 
     const {restaurantName, tableMenuList} = restrauntData
-    console.log('restaurant data from home//////////', restrauntData)
 
     return (
       <div>

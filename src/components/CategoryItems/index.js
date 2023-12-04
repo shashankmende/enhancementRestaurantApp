@@ -1,5 +1,5 @@
 import './index.css'
-import CartContext from '../../Context/CartContext'
+import CartContext from '../../context/CartContext'
 import Quantity from '../Quantity'
 
 const CategoryItems = props => {
@@ -43,7 +43,7 @@ const CategoryItems = props => {
                   }
 
                   return (
-                    <li className="category-list-item">
+                    <li className="category-list-item" key={dishId}>
                       <img src={nextUrl} alt="isVeg" />
                       <div className="right-container">
                         <div className="text-container">
@@ -56,6 +56,7 @@ const CategoryItems = props => {
                           <p>{dishDescription}</p>
                           {dishAvailability ? (
                             <Quantity
+                              key={dishId}
                               item={each}
                               quantity={dishQuantity}
                               dishId={dishId}
@@ -111,7 +112,6 @@ const CategoryItems = props => {
     )
   }
 
-  console.log('each item from items', eachItem)
   return <>{renderItems(eachItem)}</>
 }
 

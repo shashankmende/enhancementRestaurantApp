@@ -1,6 +1,6 @@
 import './index.css'
 
-import CartContext from '../../Context/CartContext'
+import CartContext from '../../context/CartContext'
 import Header from '../Header'
 import Empty from '../EmptyView'
 import CartItem from '../CartItem'

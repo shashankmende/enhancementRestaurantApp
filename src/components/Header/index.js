@@ -2,7 +2,7 @@
 import './index.css'
 import Cookies from 'js-cookie'
 import {Link, withRouter} from 'react-router-dom'
-import CartContext from '../../Context/CartContext'
+import CartContext from '../../context/CartContext'
 
 const Header = props => {
   const {restaurantName} = props
@@ -19,7 +19,7 @@ const Header = props => {
 
         return (
           <div className="header-container">
-            <Link to="/">
+            <Link to="/" className="heading-link">
               <h1>{restaurantName}</h1>
             </Link>
 
