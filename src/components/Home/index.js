@@ -10,18 +10,40 @@ import CategoryItems from '../CategoryItems'
 
 import './index.css'
 
+const apiStatusConstant = {
+  success: 'SUCCESS',
+  failure: 'FAILURE',
+  inProgress: 'IN_PROGRESS',
+  initial: 'INITIAL',
+}
+
 class Home extends Component {
-  state = {restrauntData: '', activeTabId: '11', isLoading: false}
+  state = {
+    restrauntData: '',
+    activeTabId: '11',
+    apiStatus: apiStatusConstant.initial,
+  }
 
   componentDidMount() {
     this.getData()
   }
 
   getData = async () => {
+    this.setState({
+      apiStatus: apiStatusConstant.inProgress,
+    })
     const apiUrl =
       'https://run.mocky.io/v3/77a7e71b-804a-4fbd-822c-3e365d3482cc'
 
-    const response = await fetch(apiUrl)
+    const token = Cookies.get('jwt_token')
+    const options = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      method: 'GET',
+    }
+
+    const response = await fetch(apiUrl, options)
     const data = await response.json()
     console.log('response =', data)
     const tableMenuList = data[0].table_menu_list
@@ -70,7 +92,8 @@ class Home extends Component {
 
       this.setState({
         restrauntData: newData,
-        isLoading: true,
+
+        apiStatus: apiStatusConstant.success,
       })
     }
   }
@@ -95,10 +118,6 @@ class Home extends Component {
   }
 
   renderTabs = () => {
-    const jwtToken = Cookies.get('jwt_token')
-    if (jwtToken === undefined) {
-      return <Redirect to="/login" />
-    }
     const {restrauntData, activeTabId} = this.state
     const {tableMenuList} = restrauntData
 
@@ -123,7 +142,7 @@ class Home extends Component {
     this.setState(
       {
         activeTabId: tabId,
-        isLoading: false,
+        apiStatus: apiStatusConstant.inProgress,
       },
       this.getData,
     )
@@ -209,24 +228,38 @@ class Home extends Component {
 
   renderLoadingView = () => (
     <div className="loading-container">
-      <Loader type="ThreeDots" color="#00BFFF" width={30} height={80} />
+      <Loader type="ThreeDots" color="#00BFFF" width={80} height={80} />
     </div>
   )
 
+  renderResult = () => {
+    const {apiStatus, restrauntData} = this.state
+    const {tableMenuList} = restrauntData
+    switch (apiStatus) {
+      case apiStatusConstant.success:
+        return this.renderCategoryItems(tableMenuList)
+      case apiStatusConstant.inProgress:
+        return this.renderLoadingView()
+
+      default:
+        return null
+    }
+  }
+
   render() {
-    const {restrauntData, isLoading} = this.state
-
-    const {restaurantName, tableMenuList} = restrauntData
-
+    const jwtToken = Cookies.get('jwt_token')
+    if (jwtToken === undefined) {
+      return <Redirect to="/login" />
+    }
+    const {restrauntData} = this.state
+    const {restaurantName} = restrauntData
     return (
-      <div>
+      <>
         <Header restaurantName={restaurantName} />
         {this.renderTabs()}
 
-        {isLoading
-          ? this.renderCategoryItems(tableMenuList)
-          : this.renderLoadingView()}
-      </div>
+        {this.renderResult()}
+      </>
     )
   }
 }
