@@ -230,26 +230,6 @@ class Home extends Component {
     return ''
   }
 
-  /*  renderLoadingView = () => (
-    <div className="loading-container">
-      <Loader type="ThreeDots" color="#00BFFF" width={80} height={80} />
-    </div>
-  ) */
-
-  /*    renderResult = () => {
-    const {apiStatus, restrauntData} = this.state
-    const {tableMenuList} = restrauntData
-    switch (apiStatus) {
-      case apiStatusConstant.success:
-        return this.renderCategoryItems(tableMenuList)
-      case apiStatusConstant.inProgress:
-        return this.renderLoadingView()
-
-      default:
-        return null
-    }
-  } */
-
   render() {
     const jwtToken = Cookies.get('jwt_token')
     if (jwtToken === undefined) {
