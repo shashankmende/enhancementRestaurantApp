@@ -2,7 +2,7 @@ import {Component} from 'react'
 
 import {Redirect} from 'react-router-dom'
 import Cookies from 'js-cookie'
-import Loader from 'react-loader-spinner'
+//  import Loader from 'react-loader-spinner'
 import Header from '../Header'
 import Tabs from '../Tabs'
 import CategoryItems from '../CategoryItems'
@@ -142,7 +142,6 @@ class Home extends Component {
     this.setState(
       {
         activeTabId: tabId,
-        apiStatus: apiStatusConstant.inProgress,
       },
       this.getData,
     )
@@ -201,7 +200,8 @@ class Home extends Component {
   }
 
   renderCategoryItems = tableMenuList => {
-    const {activeTabId} = this.state
+    const {activeTabId, restrauntData} = this.state
+    const {restaurantName} = restrauntData
 
     if (tableMenuList !== undefined) {
       const newList = tableMenuList.filter(
@@ -209,30 +209,34 @@ class Home extends Component {
       )
 
       return (
-        <ul>
-          {newList.map(each => (
-            <CategoryItems
-              eachItem={each.categoryDishes}
-              categoryId={each.menuCategoryId}
-              key={each.menuCategoryId}
-              onClickMinus={this.onClickMinus}
-              onClickPlus={this.onClickPlus}
-              updateData={this.updateData}
-            />
-          ))}
-        </ul>
+        <>
+          <Header restaurantName={restaurantName} />
+          {this.renderTabs()}
+          <ul>
+            {newList.map(each => (
+              <CategoryItems
+                eachItem={each.categoryDishes}
+                categoryId={each.menuCategoryId}
+                key={each.menuCategoryId}
+                onClickMinus={this.onClickMinus}
+                onClickPlus={this.onClickPlus}
+                updateData={this.updateData}
+              />
+            ))}
+          </ul>
+        </>
       )
     }
     return ''
   }
 
-  renderLoadingView = () => (
+  /*  renderLoadingView = () => (
     <div className="loading-container">
       <Loader type="ThreeDots" color="#00BFFF" width={80} height={80} />
     </div>
-  )
+  ) */
 
-  renderResult = () => {
+  /*    renderResult = () => {
     const {apiStatus, restrauntData} = this.state
     const {tableMenuList} = restrauntData
     switch (apiStatus) {
@@ -244,23 +248,17 @@ class Home extends Component {
       default:
         return null
     }
-  }
+  } */
 
   render() {
     const jwtToken = Cookies.get('jwt_token')
     if (jwtToken === undefined) {
       return <Redirect to="/login" />
     }
-    const {restrauntData} = this.state
-    const {restaurantName} = restrauntData
-    return (
-      <>
-        <Header restaurantName={restaurantName} />
-        {this.renderTabs()}
 
-        {this.renderResult()}
-      </>
-    )
+    const {restrauntData} = this.state
+    const {tableMenuList} = restrauntData
+    return <>{this.renderCategoryItems(tableMenuList)}</>
   }
 }
 
